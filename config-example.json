@@ -1,6 +1,4 @@
 {
-    "project_folders": [
-        "/home/user_name/repos/repo_name/develop-21",
-        "/home/user_name/repos/repo_name/develop-22"
-    ]
+    "develop-1": "/home/user_name/repos/project_name_1",
+    "develop-2": "/home/user_name/repos/project_name_2"
 }

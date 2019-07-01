@@ -1,36 +1,40 @@
 #!/bin/bash
 
-FOLDERS=$(jq '.project_folders' config.json)
-echo "Folders name: ${FOLDERS}"
+CONFIG="`cat config.json`"
+# PROJECTS=$(jq 'keys' config.json)
+PROJECTS=$(echo $CONFIG | jq 'keys')
 
-read -sp 'SUDO Password: ' PASSWORD
+echo "Projects: ${PROJECTS}"
+
+# nanobox start
 
 while true
 do
-for FOLDER in $FOLDERS
+for PROJECT in $PROJECTS
 do
-if [ $FOLDER != '[' ] && [ $FOLDER != ']' ]
+if [ $PROJECT != '{' ] && [ $PROJECT != '}' ]
 then
-    FOLDER_NAME=$(echo $FOLDER | sed 's/^"\(.*\)".*/\1/')
-    echo "Folder name: $FOLDER_NAME"
-    cd $FOLDER_NAME
-
-    git fetch
+    PROJECT_NAME=$(echo $PROJECT | sed 's/^"\(.*\)".*/\1/')
+    # PROJECT_PATH=$(jq '.["'$PROJECT_NAME'"]' config.json)
+    PROJECT_PATH=$(echo $CONFIG | jq '.["'$PROJECT_NAME'"]')
+    PROJECT_PATH=$(echo $PROJECT_PATH | sed 's/^"\(.*\)".*/\1/')
+    echo \n"Folder name: $PROJECT_PATH"
+    cd $PROJECT_PATH
 
     UPSTREAM=${1:-'@{u}'}
     LOCAL=$(git rev-parse @)
     REMOTE=$(git rev-parse "$UPSTREAM")
     BASE=$(git merge-base @ "$UPSTREAM")
+    BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 
     if [ $LOCAL = $REMOTE ]; then
-        BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
         echo "Branch $BRANCH_NAME up to date"
     elif [ $LOCAL = $BASE ]; then
-        BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
         echo "Need to pull $BRANCH_NAME"
         git pull origin
         if /usr/bin/git pull; then
-            printf PASSWORD | nanobox deploy $BRANCH_NAME
+            nanobox deploy $PROJECT_NAME
+
         else
             echo "WARNING: Failed to pull data form remote repository!"
         fi
@@ -41,5 +45,5 @@ then
     fi
 fi
 done
-sleep 5
+sleep 30
 done
