@@ -16,9 +16,9 @@ while true
                     PROJECT_NAME=$(echo $PROJECT | sed 's/^"\(.*\)".*/\1/')
                     PROJECT_PATH=$(echo $CONFIG | jq '.["'$PROJECT_NAME'"]')
                     PROJECT_PATH=$(echo $PROJECT_PATH | sed 's/^"\(.*\)".*/\1/')
-                    echo \n"Folder name: $PROJECT_PATH"
+                    echo "Folder name: $PROJECT_PATH"
                     cd $PROJECT_PATH
-
+                    git fetch
                     UPSTREAM=${1:-'@{u}'}
                     LOCAL=$(git rev-parse @)
                     REMOTE=$(git rev-parse "$UPSTREAM")
