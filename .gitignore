@@ -1,1 +1,9 @@
+# this project
 config.json
+*
+!.editorconfig
+!.gitattributes
+!.gitignore
+!config-example.json
+!nanobox-autodeploy.sh
+!README.md
